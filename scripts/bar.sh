@@ -11,13 +11,13 @@ interval=0
 cpu() {
 	cpu_val=$(grep -o "^[^ ]*" /proc/loadavg)
 
-	printf "^c$black^ ^b$green^ CPU"
-	printf "^c$white^ ^b$grey^ $cpu_val"
+	printf "^c$green^ "
+	printf "^c$green^ $cpu_val"
 }
 
 pkg_updates() {
-	updates=$(doas xbps-install -un | wc -l) # void
-	# updates=$(checkupdates | wc -l)   # arch , needs pacman contrib
+	# updates=$(doas xbps-install -un | wc -l) # void
+	updates=$(checkupdates | wc -l)   # arch , needs pacman contrib
 	# updates=$(aptitude search '~U' | wc -l)  # apt (ubuntu,debian etc)
 
 	if [ -z "$updates" ]; then
@@ -28,7 +28,7 @@ pkg_updates() {
 }
 
 battery() {
-	get_capacity="$(cat /sys/class/power_supply/BAT1/capacity)"
+	get_capacity="$(cat /sys/class/power_supply/BAT0/capacity)"
 	printf "^c$blue^   $get_capacity"
 }
 
@@ -38,20 +38,20 @@ brightness() {
 }
 
 mem() {
-	printf "^c$blue^^b$black^  "
-	printf "^c$blue^ $(free -h | awk '/^Mem/ { print $3 }' | sed s/i//g)"
+	#printf "^c$green^  "
+	printf "^c$green^ $(free -h | awk '/^Mem/ { print $3 }' | sed s/i//g)"
 }
 
 wlan() {
 	case "$(cat /sys/class/net/wl*/operstate 2>/dev/null)" in
-	up) printf "^c$black^ ^b$blue^ 󰤨 ^d^%s" " ^c$blue^Connected" ;;
-	down) printf "^c$black^ ^b$blue^ 󰤭 ^d^%s" " ^c$blue^Disconnected" ;;
+	up) printf "^c$blue^ 󰤨 ^d^%s" " ^c$blue^Connected" ;;
+	down) printf "^c$red^ 󰤭 ^d^%s" " ^c$red^Disconnected" ;;
 	esac
 }
 
 clock() {
-	printf "^c$black^ ^b$darkblue^ 󱑆 "
-	printf "^c$black^^b$blue^ $(date '+%I:%M %p')  "
+	printf "^c$green^ 󱑆 "
+	printf "^c$green^ $(date '+%H:%M')  "
 }
 
 while true; do
