@@ -20,7 +20,7 @@ pkg_updates() {
 	updates=$(checkupdates | wc -l)   # arch , needs pacman contrib
 	# updates=$(aptitude search '~U' | wc -l)  # apt (ubuntu,debian etc)
 
-	if [ -z "$updates" ]; then
+	if [ "$updates" -eq 0 ]; then
 		printf "^c$green^  Fully Updated"
 	else
 		printf "^c$green^  $updates"" updates"
