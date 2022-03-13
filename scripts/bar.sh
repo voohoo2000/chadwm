@@ -1,63 +1,104 @@
-#!/bin/dash
+#!/bin/sh
 
-# ^c$var^ = fg color
-# ^b$var^ = bg color
+color=#d2d2d2
 
-interval=0
+fsmon() {
+	ROOTPART=$(df -h | awk '/\/$/ { print $3}')
+	HOMEPART=$(df -h | awk '/\/home/ { print $3}')
+	SWAPPART=$(cat /proc/swaps | awk '/\// { print $4 }')
 
-# load colors
-. ~/.config/chadwm/scripts/bar_themes/onedark
-
-cpu() {
-	cpu_val=$(grep -o "^[^ ]*" /proc/loadavg)
-
-	printf "^c$green^ "
-	printf "^c$green^ $cpu_val"
+	echo "^c$color^   $ROOTPART    $HOMEPART    $SWAPPART"
 }
 
-pkg_updates() {
-	# updates=$(doas xbps-install -un | wc -l) # void
-	updates=$(checkupdates | wc -l)   # arch , needs pacman contrib
-	# updates=$(aptitude search '~U' | wc -l)  # apt (ubuntu,debian etc)
+ram() {
+	mem=$(free -h | awk '/Mem:/ { print $3 }' | cut -f1 -d 'i')
+	echo "^c$color^ $mem"
+}
 
-	if [ "$updates" -eq 0 ]; then
-		printf "^c$green^  Fully Updated"
+cpu() {
+	read -r cpu a b c previdle rest < /proc/stat
+	prevtotal=$((a+b+c+previdle))
+	sleep 0.5
+	read -r cpu a b c idle rest < /proc/stat
+	total=$((a+b+c+idle))
+	cpu=$((100*( (total-prevtotal) - (idle-previdle) ) / (total-prevtotal) ))
+	echo ^c$color^ "$cpu"%
+}
+
+network() {
+	conntype=$(ip route | awk '/default/ { print substr($5,1,1) }')
+
+	if [ -z "$conntype" ]; then
+		echo "^c$color^ down"
+	elif [ "$conntype" = "e" ]; then
+		echo "^c$color^ up"
+	elif [ "$conntype" = "w" ]; then
+		echo "^c$color^ up"
+	fi
+}
+
+volume_pa() {
+	muted=$(pactl list sinks | awk '/Mute:/ { print $2 }')
+	vol=$(pactl list sinks | grep Volume: | awk 'FNR == 1 { print $5 }' | cut -f1 -d '%')
+
+	if [ "$muted" = "yes" ]; then
+		echo "^c$color^ muted"
 	else
-		printf "^c$green^  $updates"" updates"
+		if [ "$vol" -ge 65 ]; then
+			echo "^c$color^ $vol%"
+		elif [ "$vol" -ge 40 ]; then
+			echo "^c$color^ $vol%"
+		elif [ "$vol" -ge 0 ]; then
+			echo "^c$color^ $vol%"
+		fi
+	fi
+
+}
+
+volume_alsa() {
+
+	mono=$(amixer -M sget Master | grep Mono: | awk '{ print $2 }')
+
+	if [ -z "$mono" ]; then
+		muted=$(amixer -M sget Master | awk 'FNR == 6 { print $7 }' | sed 's/[][]//g')
+		vol=$(amixer -M sget Master | awk 'FNR == 6 { print $5 }' | sed 's/[][]//g; s/%//g')
+	else
+		muted=$(amixer -M sget Master | awk 'FNR == 5 { print $6 }' | sed 's/[][]//g')
+		vol=$(amixer -M sget Master | awk 'FNR == 5 { print $4 }' | sed 's/[][]//g; s/%//g')
+	fi
+
+	if [ "$muted" = "off" ]; then
+		echo "^c$color^ muted"
+	else
+		if [ "$vol" -ge 65 ]; then
+			echo "^c$color^ $vol%"
+		elif [ "$vol" -ge 40 ]; then
+			echo "^c$color^ $vol%"
+		elif [ "$vol" -ge 0 ]; then
+			echo "^c$color^ $vol%"
+		fi
 	fi
 }
 
 battery() {
-	get_capacity="$(cat /sys/class/power_supply/BAT0/capacity)"
-	printf "^c$blue^   $get_capacity"
+    get_capacity="$(cat /sys/class/power_supply/BAT0/capacity)"
+
+    echo "^c$color^ $get_capacity"
 }
 
-brightness() {
-	printf "^c$red^   "
-	printf "^c$red^%.0f\n" $(cat /sys/class/backlight/*/brightness)
-}
-
-mem() {
-	#printf "^c$green^  "
-	printf "^c$green^ $(free -h | awk '/^Mem/ { print $3 }' | sed s/i//g)"
-}
-
-wlan() {
-	case "$(cat /sys/class/net/wl*/operstate 2>/dev/null)" in
-	up) printf "^c$blue^ 󰤨 ^d^%s" " ^c$blue^Connected" ;;
-	down) printf "^c$red^ 󰤭 ^d^%s" " ^c$red^Disconnected" ;;
-	esac
-}
 
 clock() {
-	printf "^c$green^ 󱑆 "
-	printf "^c$green^ $(date '+%H:%M')  "
+	dte=$(date +"%D")
+	time=$(date +"%H:%M")
+
+	echo "^c$color^ $dte  $time"
 }
 
-while true; do
+main() {
+	while true; do
+        xsetroot -name "$(battery) $(ram) $(cpu) $(network) $(volume_alsa) $(clock)"
+		sleep 1
+	done
+}
 
-	[ $interval = 0 ] || [ $(($interval % 3600)) = 0 ] && updates=$(pkg_updates)
-	interval=$((interval + 1))
-
-	sleep 1 && xsetroot -name "$updates $(battery) $(brightness) $(cpu) $(mem) $(wlan) $(clock)"
-done
+main
