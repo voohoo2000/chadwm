@@ -1,7 +1,10 @@
 /* See LICENSE file for copyright and license details. */
 
-#define XF86MonBrightnessDown 0x1008ff03
-#define XF86MonBrightnessUp 0x1008ff02
+#define XF86XK_MonBrightnessDown 0x1008ff03
+#define XF86XK_MonBrightnessUp 0x1008ff02
+#define XF86XK_AudioLowerVolume 0x1008FF11
+#define XF86XK_AudioMute 0x1008FF12
+#define XF86XK_AudioRaiseVolume 0x1008FF13
 
 /* appearance */
 static const unsigned int borderpx  = 0;        /* border pixel of windows */
@@ -58,7 +61,7 @@ static const char *colors[][3]      = {
 /* tagging */
 static char *tags[] = {"", "", "", "", ""};
 
-static const char* eww[]      = { "eww", "open" , "eww", NULL };
+static const char* eww[] = { "eww", "open" , "eww", NULL };
 
 static const Launcher launchers[] = {
        /* command       name to display */
@@ -129,6 +132,9 @@ static const char *term[]  = {  "st", NULL }; // change this to your term
 static const char *rofi[] = {"rofi", "-show", "drun", NULL };
 static const char *xi[] = {"xbacklight", "-inc", "7", NULL};
 static const char *xd[] = {"xbacklight", "-dec", "7", NULL};
+static const char *mutevol[] = { "pactl", "set-sink-mute", "0", "toggle", NULL  };
+static const char *upvol[] = { "pactl", "set-sink-volume", "0", "+5%", NULL  };
+static const char *downvol[] = { "pactl", "set-sink-volume", "0", "-5%", NULL  };
 
 static Key keys[] = {
     /* modifier                     key        function        argument */
@@ -138,10 +144,13 @@ static Key keys[] = {
 
     {MODKEY | ControlMask, XK_u, spawn, SHCMD("maim | xclip -selection clipboard -t image/png")},
     {MODKEY, XK_u, spawn,   SHCMD("maim --select | xclip -selection clipboard -t image/png")},
-    {0, XF86MonBrightnessDown, spawn, {.v = xd}},
-    {0, XF86MonBrightnessUp, spawn, {.v = xi}},
+    {0, XF86XK_MonBrightnessDown, spawn, {.v = xd}},
+    {0, XF86XK_MonBrightnessUp, spawn, {.v = xi}},
+    {0, XF86XK_AudioMute, spawn, {.v = mutevol}},
+    {0, XF86XK_AudioLowerVolume, spawn, {.v = downvol}},
+    {0, XF86XK_AudioRaiseVolume, spawn, {.v = upvol}},
     { MODKEY,                       XK_b,      togglebar,      {0} },
-    { MODKEY|ControlMask,                       XK_w,      tabmode,        { -1 } },
+    { MODKEY|ControlMask,           XK_w,      tabmode,        { -1 } },
     { MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
     { MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
     { MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
@@ -161,24 +170,24 @@ static Key keys[] = {
     { MODKEY|ControlMask,           XK_d,      incrgaps,       {.i = -1 } },
 
     // inner gaps
-    { MODKEY|ShiftMask,                XK_i,      incrigaps,      {.i = +1 } },
-    { MODKEY|ControlMask|ShiftMask,    XK_i,      incrigaps,      {.i = -1 } },
+    { MODKEY|ShiftMask,             XK_i,      incrigaps,      {.i = +1 } },
+    { MODKEY|ControlMask|ShiftMask, XK_i,      incrigaps,      {.i = -1 } },
 
     // outer gaps
-    { MODKEY|ControlMask,              XK_o,      incrogaps,      {.i = +1 } },
-    { MODKEY|ControlMask|ShiftMask,    XK_o,      incrogaps,      {.i = -1 } },
+    { MODKEY|ControlMask,           XK_o,      incrogaps,      {.i = +1 } },
+    { MODKEY|ControlMask|ShiftMask, XK_o,      incrogaps,      {.i = -1 } },
 
-    { MODKEY|ControlMask,              XK_6,      incrihgaps,     {.i = +1 } },
-    { MODKEY|ControlMask|ShiftMask,    XK_6,      incrihgaps,     {.i = -1 } },
-    { MODKEY|ControlMask,              XK_7,      incrivgaps,     {.i = +1 } },
-    { MODKEY|ControlMask|ShiftMask,    XK_7,      incrivgaps,     {.i = -1 } },
-    { MODKEY|ControlMask,              XK_8,      incrohgaps,     {.i = +1 } },
-    { MODKEY|ControlMask|ShiftMask,    XK_8,      incrohgaps,     {.i = -1 } },
-    { MODKEY|ControlMask,              XK_9,      incrovgaps,     {.i = +1 } },
-    { MODKEY|ControlMask|ShiftMask,    XK_9,      incrovgaps,     {.i = -1 } },
+    { MODKEY|ControlMask,           XK_6,      incrihgaps,     {.i = +1 } },
+    { MODKEY|ControlMask|ShiftMask, XK_6,      incrihgaps,     {.i = -1 } },
+    { MODKEY|ControlMask,           XK_7,      incrivgaps,     {.i = +1 } },
+    { MODKEY|ControlMask|ShiftMask, XK_7,      incrivgaps,     {.i = -1 } },
+    { MODKEY|ControlMask,           XK_8,      incrohgaps,     {.i = +1 } },
+    { MODKEY|ControlMask|ShiftMask, XK_8,      incrohgaps,     {.i = -1 } },
+    { MODKEY|ControlMask,           XK_9,      incrovgaps,     {.i = +1 } },
+    { MODKEY|ControlMask|ShiftMask, XK_9,      incrovgaps,     {.i = -1 } },
 
     { MODKEY|ControlMask,           XK_t,      togglegaps,     {0} },
-    { MODKEY|ControlMask|ShiftMask,             XK_d,      defaultgaps,    {0} },
+    { MODKEY|ControlMask|ShiftMask, XK_d,      defaultgaps,    {0} },
 
     { MODKEY,                       XK_q,      killclient,     {0} },
     { MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
@@ -187,7 +196,7 @@ static Key keys[] = {
     { MODKEY|ControlMask,           XK_g,      setlayout,      {.v = &layouts[10]} },
     { MODKEY|ControlMask|ShiftMask, XK_t,      setlayout,      {.v = &layouts[13]} },
     { MODKEY,                       XK_space,  setlayout,      {0} },
-    { MODKEY|ControlMask,		XK_comma,  cyclelayout,    {.i = -1 } },
+    { MODKEY|ControlMask,		    XK_comma,  cyclelayout,    {.i = -1 } },
     { MODKEY|ControlMask,           XK_period, cyclelayout,    {.i = +1 } },
     { MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
     { MODKEY,                       XK_f,      togglefullscr,  {0} },
@@ -197,9 +206,9 @@ static Key keys[] = {
     { MODKEY,                       XK_period, focusmon,       {.i = +1 } },
     { MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
     { MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
-    { MODKEY|ShiftMask,             XK_minus, 		setborderpx,    {.i = -1 } },
-    { MODKEY|ShiftMask,             XK_p, 	        setborderpx,    {.i = +1 } },
-    { MODKEY|ShiftMask,             XK_w, 	        setborderpx,    {.i = default_border } },
+    { MODKEY|ShiftMask,             XK_minus,  setborderpx,    {.i = -1 } },
+    { MODKEY|ShiftMask,             XK_p, 	   setborderpx,    {.i = +1 } },
+    { MODKEY|ShiftMask,             XK_w, 	   setborderpx,    {.i = default_border } },
 
     TAGKEYS(                        XK_1,                      0)
     TAGKEYS(                        XK_2,                      1)
@@ -241,7 +250,7 @@ static Button buttons[] = {
 		 * to control these separately (i.e. to retain the feature to move a tiled window
 		 * into a floating position).
 		 */
-		{ ClkClientWin,         MODKEY,         Button1,        moveorplace,    {.i = 0} },
+	{ ClkClientWin,         MODKEY,         Button1,        moveorplace,    {.i = 0} },
     { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
     { ClkClientWin,         ControlMask,    Button1,        dragmfact,      {0} },
