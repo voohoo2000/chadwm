@@ -24,6 +24,12 @@ https://user-images.githubusercontent.com/59060246/128050994-17f46934-6604-4430-
 - imlib2 
 - xsetroot package ( status2d uses this to add colors on dwmbar)
 - JetbrainsMono Nerd Font (or any nerd font) and Material design icon font
+  ```
+  https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/JetBrainsMono/Ligatures/Medium/complete
+  ```
+- rofi
+- ranger
+- highlight, image2txt ... (check scope.sh in folder ranger)
 
 # Setup 
 
@@ -34,6 +40,14 @@ cd ~/.config/chadwm/chadwm
 sudo make install
 ```
 - copy the stuff from fonts folder to your ~/.local/share/fonts 
+- copy ranger folder to your ~/.config/ranger
+```
+cp -r ranger ~/.config/
+```
+- copy rofi configuration to ~/.config/rofi
+```
+cp rofi/config.rasi ~/.config/rofi/
+```
 - autostart script in the scripts dir is just an example one so it must be adjusted for your liking!
 
 # Run chadwm

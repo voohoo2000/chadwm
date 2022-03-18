@@ -49,6 +49,9 @@ key                     | Do         | Value
 key                    | Do             | Value
 ---------------------- | -------------- | ------
  win + q               |  killclient    | 0
+ win + ctrl + s        |  suspend       | 0
+ win + ctrl + h        |  hibernate     | 0
+ win + ctrl + d        |  shutdown      | 0
  win + t               |  setlayout     | layouts[0]
  win + shift + f       |  setlayout     | layouts[1]
  win + m               |  setlayout     | layouts[2]

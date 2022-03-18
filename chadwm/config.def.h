@@ -135,6 +135,9 @@ static const char *xd[] = {"xbacklight", "-dec", "7", NULL};
 static const char *mutevol[] = { "pactl", "set-sink-mute", "0", "toggle", NULL  };
 static const char *upvol[] = { "pactl", "set-sink-volume", "0", "+5%", NULL  };
 static const char *downvol[] = { "pactl", "set-sink-volume", "0", "-5%", NULL  };
+static const char *suspend[] = {"systemctl", "suspend", NULL, NULL };
+static const char *hibernate[] = {"systemctl", "hibernate", NULL, NULL };
+static const char *shutdown[] = {"shutdown", "now", NULL, NULL };
 
 static Key keys[] = {
     /* modifier                     key        function        argument */
@@ -149,6 +152,9 @@ static Key keys[] = {
     {0, XF86XK_AudioMute, spawn, {.v = mutevol}},
     {0, XF86XK_AudioLowerVolume, spawn, {.v = downvol}},
     {0, XF86XK_AudioRaiseVolume, spawn, {.v = upvol}},
+    { MODKEY|ControlMask|ShiftMask, XK_s,      spawn,          {.v = suspend } },
+    { MODKEY|ControlMask|ShiftMask, XK_h,      spawn,          {.v = hibernate } },
+    { MODKEY|ControlMask|ShiftMask, XK_d,      spawn,          {.v = shutdown } },
     { MODKEY,                       XK_b,      togglebar,      {0} },
     { MODKEY|ControlMask,           XK_w,      tabmode,        { -1 } },
     { MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
