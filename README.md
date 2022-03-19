@@ -20,7 +20,7 @@ https://user-images.githubusercontent.com/59060246/128050994-17f46934-6604-4430-
 
 # Requirements
 
-- zsh (shell)
+- fish (shell)
 - imlib2 
 - xsetroot package ( status2d uses this to add colors on dwmbar)
 - JetbrainsMono Nerd Font (or any nerd font) and Material design icon font
@@ -31,6 +31,8 @@ https://user-images.githubusercontent.com/59060246/128050994-17f46934-6604-4430-
 - ranger
 - alacritty
 - highlight, image2txt ... (check scope.sh in folder ranger)
+- shell-color-scripts
+- exa
 
 # Setup 
 
@@ -53,6 +55,11 @@ cp -r rofi ~/.config
 ```
 cp -r alacritty ~/.config
 ```
+- copy fish configuration to ~/.config/fish
+```
+cp -r fish ~/.config
+```
+- autostart script in the scripts dir is just an example one so it must be adjusted for your liking!
 - autostart script in the scripts dir is just an example one so it must be adjusted for your liking!
 
 # Run chadwm
