@@ -4,4 +4,4 @@ configuration {
   font: "Iosevka 16";
   show-icons:         true;
 }
-@theme "~/.config/chadwm/rofi/themes/gruvbox-dark.rasi"
+@theme "~/.config/rofi/themes/gruvbox-dark.rasi"
