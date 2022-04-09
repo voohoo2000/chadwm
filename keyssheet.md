@@ -1,4 +1,4 @@
-## Windows Keys                                     
+## Windows Keys               
 key               | Do         | Value
 ----------------- | ---------- | ------
  win + b          | togglebar  |   0   
@@ -49,9 +49,9 @@ key                     | Do         | Value
 key                    | Do             | Value
 ---------------------- | -------------- | ------
  win + q               |  killclient    | 0
- win + ctrl + s        |  suspend       | 0
- win + ctrl + h        |  hibernate     | 0
- win + ctrl + d        |  shutdown      | 0
+ win + ctrl + shift + s|  suspend       | 0
+ win + ctrl + shift + h|  hibernate     | 0
+ win + ctrl + shift + d|  shutdown      | 0
  win + t               |  setlayout     | layouts[0]
  win + shift + f       |  setlayout     | layouts[1]
  win + m               |  setlayout     | layouts[2]
@@ -69,7 +69,7 @@ key                    | Do             | Value
  win + shift + comma   |  tagmon        |-1 
  win + shift + period  |  tagmon        |+1 
  win + shift + minus   |  setborderpx   |-1 
- win + shift + p 	   |  setborderpx   |+1 
+ win + shift + p       |  setborderpx   |+1 
  win + shift + w       |  setborderpx   |default_border 
  win + ctrl + q        |  quit          |0 
  win + shift + r       |  quit          |1 
@@ -79,13 +79,13 @@ key                    | Do             | Value
 ## button definitions
  click         | event mask |  button    |  function     | argument
 -------------- | ---------- | ---------- | ------------- | -------------  
- ClkLtSymbol   |   0        |  Button1   | setlayout     | 0
- ClkLtSymbol   |   0        |  Button3   | setlayout     | layouts[2]
- ClkWinTitle   |   0        |  Button2   | zoom          | 0
- ClkStatusText |   0        |  Button2   | spawn         | termcmd 
- ClkClientWin  |   win +    |  Button1   | moveorplace   | 0
- ClkClientWin  |   win +    |  Button2   | togglefloating| 0
- ClkClientWin  |   win +    |  Button3   | resizemouse   | 0
+ ClkLtSymbol   |  0         |  Button1   | setlayout     | 0
+ ClkLtSymbol   |  0         |  Button3   | setlayout     | layouts[2]
+ ClkWinTitle   |  0         |  Button2   | zoom          | 0
+ ClkStatusText |  0         |  Button2   | spawn         | termcmd 
+ ClkClientWin  |  win +     |  Button1   | moveorplace   | 0
+ ClkClientWin  |  win +     |  Button2   | togglefloating| 0
+ ClkClientWin  |  win +     |  Button3   | resizemouse   | 0
  ClkClientWin  |  ctrl +    |  Button1   | dragmfact     | 0
  ClkClientWin  |  ctrl +    |  Button3   | dragcfact     | 0
  ClkTagBar     |  0         |  Button1   | view          | 0

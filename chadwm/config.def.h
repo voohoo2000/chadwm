@@ -5,6 +5,7 @@
 #define XF86XK_AudioLowerVolume 0x1008FF11
 #define XF86XK_AudioMute 0x1008FF12
 #define XF86XK_AudioRaiseVolume 0x1008FF13
+#define XF86XK_AudioMicMute 0x1008FFB2
 
 /* appearance */
 static const unsigned int borderpx  = 0;        /* border pixel of windows */
@@ -83,9 +84,8 @@ static const Rule rules[] = {
      *	WM_NAME(STRING) = title
      */
        	/* class      instance    title       tags mask     iscentered   isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            0,           1,           -1 },
-	{ "edge",     NULL,       NULL,       1 << 8,       0,           0,           -1 },
         { "eww",      NULL,       NULL,       0,            0,           1,           -1 },
+        { "wemeetapp",NULL,       NULL,       0,            1,           1,           -1 },
 };
 
 /* layout(s) */
@@ -135,6 +135,7 @@ static const char *xd[] = {"xbacklight", "-dec", "7", NULL};
 static const char *mutevol[] = { "pactl", "set-sink-mute", "0", "toggle", NULL  };
 static const char *upvol[] = { "pactl", "set-sink-volume", "0", "+5%", NULL  };
 static const char *downvol[] = { "pactl", "set-sink-volume", "0", "-5%", NULL  };
+static const char *micmute[] = { "pactl", "set-source-mute", "1", "toggle", NULL  };
 static const char *suspend[] = {"systemctl", "suspend", NULL, NULL };
 static const char *hibernate[] = {"systemctl", "hibernate", NULL, NULL };
 static const char *shutdown[] = {"shutdown", "now", NULL, NULL };
@@ -152,6 +153,7 @@ static Key keys[] = {
     {0, XF86XK_AudioMute, spawn, {.v = mutevol}},
     {0, XF86XK_AudioLowerVolume, spawn, {.v = downvol}},
     {0, XF86XK_AudioRaiseVolume, spawn, {.v = upvol}},
+    {0, XF86XK_AudioMicMute, spawn, {.v = micmute}},
     { MODKEY|ControlMask|ShiftMask, XK_s,      spawn,          {.v = suspend } },
     { MODKEY|ControlMask|ShiftMask, XK_h,      spawn,          {.v = hibernate } },
     { MODKEY|ControlMask|ShiftMask, XK_d,      spawn,          {.v = shutdown } },
