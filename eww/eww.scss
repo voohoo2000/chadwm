@@ -1,4 +1,4 @@
-@import "scss/themes/everblush.scss";
+@import "scss/themes/tundra.scss";
 
 // header
 @import "scss/header/statusBtns.scss";
@@ -12,8 +12,13 @@
 @import "scss/footer/btns.scss";
 @import "scss/footer/backlight.scss";
 
-.eww {
+.eww > * {
   padding: 1rem;
-  padding-top: .6rem;
+  padding-top: 0;
   background-color: $black;
+  color: $white;
+}
+
+.eww   {
+  // border: 2px solid $grey;
 }

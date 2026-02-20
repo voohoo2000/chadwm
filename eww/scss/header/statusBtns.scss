@@ -1,16 +1,13 @@
 .close , .min , .max{
-  font-family: 'JetBrainsMono Nerd Font';
-  font-size: 1.3rem;
-  padding: 0 0.3rem;
+  font-family: 'JetBrainsMono Nerd Font Mono';
+  font-size: 1.9rem;
   color: $red;
 }
 
 .min {
-  color: $yellow;
+  color: lighten($grey, 10%);
 }
 
 .close:hover , .min:hover{
-  background-color: $grey;
   color: $white;
-  border-radius: 50%; 
 }
