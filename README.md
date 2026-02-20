@@ -67,7 +67,6 @@ cp -r alacritty ~/.config
 cp -r fish ~/.config
 ```
 - autostart script in the scripts dir is just an example one so it must be adjusted for your liking!
-- autostart script in the scripts dir is just an example one so it must be adjusted for your liking!
 (Note: chmod +x all of the scripts)
 
 # Run chadwm
