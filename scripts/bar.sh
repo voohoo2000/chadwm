@@ -84,7 +84,7 @@ volume_alsa() {
 battery() {
     get_capacity="$(cat /sys/class/power_supply/*/capacity)"
 
-    echo "^c$color^ $get_capacity%"
+    echo "^c$color^ $get_capacity%"
 }
 
 clock() {
