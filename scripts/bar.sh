@@ -1,6 +1,7 @@
 #!/bin/sh
 
 color=#d2d2d2
+INTERFACE=$(ip route | awk '/^default/ {print $5; exit}')
 
 fsmon() {
 	ROOTPART=$(df -h | awk '/\/$/ { print $3}')
@@ -81,9 +82,9 @@ volume_alsa() {
 }
 
 battery() {
-    get_capacity="$(cat /sys/class/power_supply/BAT0/capacity)"
+    get_capacity="$(cat /sys/class/power_supply/*/capacity)"
 
-    echo "^c$color^ $get_capacity"
+    echo "^c$color^ $get_capacity%"
 }
 
 clock() {
@@ -93,41 +94,35 @@ clock() {
 	echo "^c$color^ $dte  $time"
 }
 
-
-function get_bytes {
-    interface=$(ip route get 8.8.8.8 2>/dev/null | awk '{print $5}')
-    line=$(grep $interface /proc/net/dev | cut -d ':' -f2 | awk '{print "received_bytes="$1, "transmitted_bytes="$9}')
-    eval $line
-    now=$(date +%s%N)
- }
-
-
-function get_velocity {
-    value=$1
-    old_value=$2
-    now=$3
-    timediff=$(($now - $old_time))
-    velKB=$(echo "1000000000*($value-$old_value)/1024/$timediff" | bc)
-    if test "$velKB" -gt 1024
-    then
-        echo $(echo "scale=2; $velKB/1024" |bc)MB/s
-    else
-        echo ${velKB}KB/s
-    fi
-}
-
 netspeed() {
-    get_bytes
-    old_received_bytes=$received_bytes
-    old_transmitted_bytes=$transmitted_bytes
-    old_time=$now
 
-    get_bytes
+    if [ -z "$INTERFACE" ]; then
+        STATUS="⚠ 离线 "
+        xsetroot -name "$STATUS"
+        sleep 1
+        continue
+    fi
 
-    vel_recv=$(get_velocity $received_bytes $old_received_bytes $now)
-    vel_trans=$(get_velocity $transmitted_bytes $old_transmitted_bytes $now)
+    rx1=$(cat /sys/class/net/${INTERFACE}/statistics/rx_bytes 2>/dev/null || echo 0)
+    tx1=$(cat /sys/class/net/${INTERFACE}/statistics/tx_bytes 2>/dev/null || echo 0)
 
-    echo "$vel_recv  $vel_trans "
+    sleep 1
+
+    rx2=$(cat /sys/class/net/${INTERFACE}/statistics/rx_bytes 2>/dev/null || echo 0)
+    tx2=$(cat /sys/class/net/${INTERFACE}/statistics/tx_bytes 2>/dev/null || echo 0)
+
+    if [ "$rx2" -lt "$rx1" ] || [ "$tx2" -lt "$tx1" ]; then
+        continue
+    fi
+
+    rx_rate=$((rx2 - rx1))
+    tx_rate=$((tx2 - tx1))
+
+    rx_kb=$((rx_rate / 1024))
+    tx_kb=$((tx_rate / 1024))
+
+    STATUS="↓ ${rx_kb}KB/s | ↑ ${tx_kb}KB/s"
+    echo "^c$color^$STATUS"
 }
 
 main() {

@@ -29,6 +29,11 @@ static const int horizpadtabo       = 15;
 static const int scalepreview       = 4;
 static const int tag_preview        = 0;        /* 1 means enable, 0 is off */
 static const int colorfultag        = 1;        /* 0 means use SchemeSel for selected non vacant tag */
+static const char *upvol[]   = { "/usr/bin/pactl", "set-sink-volume", "0", "+5%",     NULL };
+static const char *downvol[] = { "/usr/bin/pactl", "set-sink-volume", "0", "-5%",     NULL };
+static const char *mutevol[] = { "/usr/bin/pactl", "set-sink-mute",   "0", "toggle",  NULL };
+static const char *light_up[] = {"/usr/bin/light", "-A", "5", NULL};
+static const char *light_down[] = {"/usr/bin/light", "-U", "5", NULL};
 static const int new_window_attach_on_end = 0; /*  1 means the new window will attach on the end; 0 means the new window will attach on the front,default is front */
 #define ICONSIZE 19   /* icon size */
 #define ICONSPACING 8 /* space between icon and title */
@@ -128,92 +133,94 @@ static const Layout layouts[] = {
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
-static const char *term[]  = {"alacritty", NULL };
-static const char *rofi[] = {"rofi", "-show", "drun", NULL };
-static const char *xi[] = {"xbacklight", "-inc", "7", NULL};
-static const char *xd[] = {"xbacklight", "-dec", "7", NULL};
-static const char *mutevol[] = { "pactl", "set-sink-mute", "0", "toggle", NULL  };
-static const char *upvol[] = { "pactl", "set-sink-volume", "0", "+5%", NULL  };
-static const char *downvol[] = { "pactl", "set-sink-volume", "0", "-5%", NULL  };
-static const char *micmute[] = { "pactl", "set-source-mute", "1", "toggle", NULL  };
-static const char *suspend[] = {"systemctl", "suspend", NULL, NULL };
-static const char *hibernate[] = {"systemctl", "hibernate", NULL, NULL };
-static const char *shutdown[] = {"shutdown", "now", NULL, NULL };
 
 static const Key keys[] = {
     /* modifier                         key         function        argument */
 
-    {MODKEY | ControlMask, XK_u, spawn, SHCMD("maim | xclip -selection clipboard -t image/png")},
-    {MODKEY, XK_u, spawn,   SHCMD("maim --select | xclip -selection clipboard -t image/png")},
-    {0, XF86XK_MonBrightnessDown, spawn, {.v = xd}},
-    {0, XF86XK_MonBrightnessUp, spawn, {.v = xi}},
-    {0, XF86XK_AudioMute, spawn, {.v = mutevol}},
-    {0, XF86XK_AudioLowerVolume, spawn, {.v = downvol}},
-    {0, XF86XK_AudioRaiseVolume, spawn, {.v = upvol}},
-    {0, XF86XK_AudioMicMute, spawn, {.v = micmute}},
-    { MODKEY|ControlMask|ShiftMask, XK_s,      spawn,          {.v = suspend } },
-    { MODKEY|ControlMask|ShiftMask, XK_h,      spawn,          {.v = hibernate } },
-    { MODKEY|ControlMask|ShiftMask, XK_d,      spawn,          {.v = shutdown } },
-    { MODKEY,                       XK_b,      togglebar,      {0} },
-    { MODKEY|ControlMask,           XK_w,      tabmode,        { -1 } },
-    { MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
-    { MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-    { MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
-    { MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
-    { MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
-    { MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-    { MODKEY|ShiftMask,             XK_h,      setcfact,       {.f = +0.25} },
-    { MODKEY|ShiftMask,             XK_l,      setcfact,       {.f = -0.25} },
-    { MODKEY|ShiftMask,             XK_o,      setcfact,       {.f =  0.00} },
-    { MODKEY|ShiftMask,             XK_j,      movestack,      {.i = +1 } },
-    { MODKEY|ShiftMask,             XK_k,      movestack,      {.i = -1 } },
-    { MODKEY,                       XK_Return, zoom,           {0} },
-    { MODKEY,                       XK_Tab,    view,           {0} },
+    // brightness and audio 
+    {0,             XF86XK_AudioLowerVolume,    spawn, {.v = downvol}},
+	{0,             XF86XK_AudioMute, spawn,    {.v = mutevol }},
+	{0,             XF86XK_AudioRaiseVolume,    spawn, {.v = upvol}},
+	{0,				XF86XK_MonBrightnessUp,     spawn,	{.v = light_up}},
+	{0,				XF86XK_MonBrightnessDown,   spawn,	{.v = light_down}},
+
+    // screenshot fullscreen and cropped
+    {MODKEY|ControlMask,                XK_u,       spawn,
+        SHCMD("maim | xclip -selection clipboard -t image/png")},
+    {MODKEY,                            XK_u,       spawn,
+        SHCMD("maim --select | xclip -selection clipboard -t image/png")},
+
+    { MODKEY,                           XK_c,       spawn,          SHCMD("rofi -show drun") },
+    { MODKEY,                           XK_Return,  spawn,          SHCMD("alacritty")},
+
+    // toggle stuff
+    { MODKEY,                           XK_b,       togglebar,      {0} },
+    { MODKEY|ControlMask,               XK_t,       togglegaps,     {0} },
+    { MODKEY|ShiftMask,                 XK_space,   togglefloating, {0} },
+    { MODKEY,                           XK_f,       togglefullscr,  {0} },
+
+    { MODKEY|ControlMask,               XK_w,       tabmode,        { -1 } },
+    { MODKEY,                           XK_j,       focusstack,     {.i = +1 } },
+    { MODKEY,                           XK_k,       focusstack,     {.i = -1 } },
+    { MODKEY,                           XK_i,       incnmaster,     {.i = +1 } },
+    { MODKEY,                           XK_d,       incnmaster,     {.i = -1 } },
+
+    // shift view
+    { MODKEY,                           XK_Left,    shiftview,      {.i = -1 } },
+    { MODKEY,                           XK_Right,   shiftview,      {.i = +1 } },
+
+    // change m,cfact sizes 
+    { MODKEY,                           XK_h,       setmfact,       {.f = -0.05} },
+    { MODKEY,                           XK_l,       setmfact,       {.f = +0.05} },
+    { MODKEY|ShiftMask,                 XK_h,       setcfact,       {.f = +0.25} },
+    { MODKEY|ShiftMask,                 XK_l,       setcfact,       {.f = -0.25} },
+    { MODKEY|ShiftMask,                 XK_o,       setcfact,       {.f =  0.00} },
+
+
+    { MODKEY|ShiftMask,                 XK_j,       movestack,      {.i = +1 } },
+    { MODKEY|ShiftMask,                 XK_k,       movestack,      {.i = -1 } },
+    { MODKEY|ShiftMask,                 XK_Return,  zoom,           {0} },
+    { MODKEY,                           XK_Tab,     view,           {0} },
 
     // overall gaps
     { MODKEY|ControlMask,               XK_i,       incrgaps,       {.i = +1 } },
     { MODKEY|ControlMask,               XK_d,       incrgaps,       {.i = -1 } },
 
     // inner gaps
-    { MODKEY|ShiftMask,             XK_i,      incrigaps,      {.i = +1 } },
-    { MODKEY|ControlMask|ShiftMask, XK_i,      incrigaps,      {.i = -1 } },
+    { MODKEY|ShiftMask,                 XK_i,       incrigaps,      {.i = +1 } },
+    { MODKEY|ControlMask|ShiftMask,     XK_i,       incrigaps,      {.i = -1 } },
 
     // outer gaps
-    { MODKEY|ControlMask,           XK_o,      incrogaps,      {.i = +1 } },
-    { MODKEY|ControlMask|ShiftMask, XK_o,      incrogaps,      {.i = -1 } },
+    { MODKEY|ControlMask,               XK_o,       incrogaps,      {.i = +1 } },
+    { MODKEY|ControlMask|ShiftMask,     XK_o,       incrogaps,      {.i = -1 } },
 
-    { MODKEY|ControlMask,           XK_6,      incrihgaps,     {.i = +1 } },
-    { MODKEY|ControlMask|ShiftMask, XK_6,      incrihgaps,     {.i = -1 } },
-    { MODKEY|ControlMask,           XK_7,      incrivgaps,     {.i = +1 } },
-    { MODKEY|ControlMask|ShiftMask, XK_7,      incrivgaps,     {.i = -1 } },
-    { MODKEY|ControlMask,           XK_8,      incrohgaps,     {.i = +1 } },
-    { MODKEY|ControlMask|ShiftMask, XK_8,      incrohgaps,     {.i = -1 } },
-    { MODKEY|ControlMask,           XK_9,      incrovgaps,     {.i = +1 } },
-    { MODKEY|ControlMask|ShiftMask, XK_9,      incrovgaps,     {.i = -1 } },
+    // inner+outer hori, vert gaps 
+    { MODKEY|ControlMask,               XK_6,       incrihgaps,     {.i = +1 } },
+    { MODKEY|ControlMask|ShiftMask,     XK_6,       incrihgaps,     {.i = -1 } },
+    { MODKEY|ControlMask,               XK_7,       incrivgaps,     {.i = +1 } },
+    { MODKEY|ControlMask|ShiftMask,     XK_7,       incrivgaps,     {.i = -1 } },
+    { MODKEY|ControlMask,               XK_8,       incrohgaps,     {.i = +1 } },
+    { MODKEY|ControlMask|ShiftMask,     XK_8,       incrohgaps,     {.i = -1 } },
+    { MODKEY|ControlMask,               XK_9,       incrovgaps,     {.i = +1 } },
+    { MODKEY|ControlMask|ShiftMask,     XK_9,       incrovgaps,     {.i = -1 } },
 
-    { MODKEY|ControlMask,           XK_t,      togglegaps,     {0} },
-    { MODKEY|ControlMask|ShiftMask, XK_d,      defaultgaps,    {0} },
+    { MODKEY|ControlMask|ShiftMask,     XK_d,       defaultgaps,    {0} },
 
-    { MODKEY,                       XK_q,      killclient,     {0} },
-    { MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-    { MODKEY|ShiftMask,             XK_f,      setlayout,      {.v = &layouts[1]} },
-    { MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-    { MODKEY|ControlMask,           XK_g,      setlayout,      {.v = &layouts[10]} },
-    { MODKEY|ControlMask|ShiftMask, XK_t,      setlayout,      {.v = &layouts[13]} },
-    { MODKEY,                       XK_space,  setlayout,      {0} },
-    { MODKEY|ControlMask,		    XK_comma,  cyclelayout,    {.i = -1 } },
-    { MODKEY|ControlMask,           XK_period, cyclelayout,    {.i = +1 } },
-    { MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
-    { MODKEY,                       XK_f,      togglefullscr,  {0} },
-    { MODKEY,                       XK_0,      view,           {.ui = ~0 } },
-    { MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
-    { MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
-    { MODKEY,                       XK_period, focusmon,       {.i = +1 } },
-    { MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
-    { MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
-    { MODKEY|ShiftMask,             XK_minus,  setborderpx,    {.i = -1 } },
-    { MODKEY|ShiftMask,             XK_p, 	   setborderpx,    {.i = +1 } },
-    { MODKEY|ShiftMask,             XK_w, 	   setborderpx,    {.i = default_border } },
+    // layout
+    { MODKEY,                           XK_t,       setlayout,      {.v = &layouts[0]} },
+    { MODKEY|ShiftMask,                 XK_f,       setlayout,      {.v = &layouts[1]} },
+    { MODKEY,                           XK_m,       setlayout,      {.v = &layouts[2]} },
+    { MODKEY|ControlMask,               XK_g,       setlayout,      {.v = &layouts[10]} },
+    { MODKEY|ControlMask|ShiftMask,     XK_t,       setlayout,      {.v = &layouts[13]} },
+    { MODKEY,                           XK_space,   setlayout,      {0} },
+    { MODKEY|ControlMask,               XK_comma,   cyclelayout,    {.i = -1 } },
+    { MODKEY|ControlMask,               XK_period,  cyclelayout,    {.i = +1 } },
+    { MODKEY,                           XK_0,       view,           {.ui = ~0 } },
+    { MODKEY|ShiftMask,                 XK_0,       tag,            {.ui = ~0 } },
+    { MODKEY,                           XK_comma,   focusmon,       {.i = -1 } },
+    { MODKEY,                           XK_period,  focusmon,       {.i = +1 } },
+    { MODKEY|ShiftMask,                 XK_comma,   tagmon,         {.i = -1 } },
+    { MODKEY|ShiftMask,                 XK_period,  tagmon,         {.i = +1 } },
 
     // change border size
     { MODKEY|ShiftMask,                 XK_minus,   setborderpx,    {.i = -1 } },
@@ -256,17 +263,17 @@ static const Button buttons[] = {
     /* Keep movemouse? */
     /* { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} }, */
 
-		/* placemouse options, choose which feels more natural:
-		 *    0 - tiled position is relative to mouse cursor
-		 *    1 - tiled postiion is relative to window center
-		 *    2 - mouse pointer warps to window center
-		 *
-		 * The moveorplace uses movemouse or placemouse depending on the floating state
-		 * of the selected client. Set up individual keybindings for the two if you want
-		 * to control these separately (i.e. to retain the feature to move a tiled window
-		 * into a floating position).
-		 */
-	{ ClkClientWin,         MODKEY,         Button1,        moveorplace,    {.i = 0} },
+    /* placemouse options, choose which feels more natural:
+    *    0 - tiled position is relative to mouse cursor
+    *    1 - tiled position is relative to window center
+    *    2 - mouse pointer warps to window center
+    *
+    * The moveorplace uses movemouse or placemouse depending on the floating state
+    * of the selected client. Set up individual keybindings for the two if you want
+    * to control these separately (i.e. to retain the feature to move a tiled window
+    * into a floating position).
+    */
+    { ClkClientWin,         MODKEY,         Button1,        moveorplace,    {.i = 0} },
     { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
     { ClkClientWin,         ControlMask,    Button1,        dragmfact,      {0} },
